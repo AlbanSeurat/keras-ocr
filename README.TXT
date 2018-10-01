@@ -9,3 +9,7 @@ using vgg dict net dataset and network and this approach : https://towardsdatasc
 
 VGG dataset for words : http://www.robots.ox.ac.uk/~vgg/data/text/
 
+2 - Use this project to generate images with many characters (not only text)
+
+https://github.com/Belval/TextRecognitionDataGenerator
+

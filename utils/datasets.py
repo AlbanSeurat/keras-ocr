@@ -4,19 +4,13 @@ from models.dict import DictNet
 import numpy as np
 
 
-class DictNetDataSet:
+class _BaseDataSet:
 
-    def __init__(self, dir):
+    def __init__(self, dir, chars, labels, images):
         self.dir = dir
-
-        with open("%s/lexicon.txt" % dir) as f:
-            self.labels = [line.strip() for line in f.readlines()]
-            self.chars = sorted(set("".join(self.labels)))
-            self.chars.append(' ')
-
-    def images(self, gen_type):
-        with open("%s/annotation_%s.txt" % (self.dir, gen_type)) as f:
-            return f.readlines()
+        self.chars = chars
+        self.labels = labels
+        self.images = images
 
     def preprocess(self, image_name, dir=None):
         return DictNet.preprocess(mpimg.imread("%s/%s" % (self.dir if dir is None else dir, image_name)))
@@ -24,7 +18,7 @@ class DictNetDataSet:
     def lexicon_len(self):
         return len(self.chars)
 
-    def labels_from_id(self, id : int):
+    def labels_from_id(self, id: int):
         return self.text_to_labels(self.labels[int(id)])
 
     # Translation of characters to unique integer values
@@ -45,14 +39,46 @@ class DictNetDataSet:
         return "".join(ret)
 
 
-class DictNetGenerator(Sequence):
+class DictNetDataSet(_BaseDataSet):
+
+    def __init__(self, dir):
+        with open("%s/lexicon.txt" % dir) as f:
+            labels = [line.strip() for line in f.readlines()]
+            chars = sorted(set("".join(labels)))
+            chars.append(' ')
+
+        def splitter(line):
+            splited = line.split(" ")
+            return (splited[0], splited[1])
+
+        with open("%s/annotation_%s.txt" % (self.dir, "train")) as f:
+            images = [splitter(line) for line in f.readlines()]
+
+        super(DictNetDataSet, self).__init__(dir, chars, labels, images)
+
+
+class CustomGeneratedDataSet(_BaseDataSet):
+
+    def __init__(self, dir):
+        with open("%s/train/labels.txt" % dir) as f:
+            lines = [line.strip().split(" ") for line in f.readlines()]
+            labels = [line[1] for line in lines]
+            chars = sorted(set("".join(labels)))
+            chars.append(' ')
+
+            images = [("train/%s" % line[0], idx) for (idx, line) in enumerate(lines)]
+
+        super(CustomGeneratedDataSet, self).__init__(dir, chars, labels, images)
+
+
+class DataSetGenerator(Sequence):
     maxTextLen = 32
 
-    def __init__(self, dataset : DictNetDataSet, batch_size=50, gen_type="train", shuffle=True):
+    def __init__(self, dataset: DictNetDataSet, batch_size=50, gen_type="train", shuffle=True):
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.dataset = dataset
-        self.images = dataset.images(gen_type)
+        self.images = dataset.images.copy()
 
         self.on_epoch_end()
 
@@ -67,10 +93,9 @@ class DictNetGenerator(Sequence):
         label_length = np.zeros([self.batch_size, 1])
 
         for i, image in enumerate(list_tmp_images):
-            image_name, id = map(str.strip, image.split(" "))
+            image_name, id = image
             X[i,] = self.dataset.preprocess(image_name)
             label = np.asarray(self.dataset.labels_from_id(id))
-            # label = np.asarray([self.chars.index(c) for c in self.labels[int(id)]])
             labels[i, 0:label.shape[0]] = label
             label_length[i] = len(label)
             input_length[i] = self.batch_size

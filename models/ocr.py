@@ -13,8 +13,8 @@ class _OcrBase(Model):
     def _relu6(self, x):
         return K.relu(x, max_value=6)
 
-    def __init__(self, lexicon_size, weights="data/dictnet.mat"):
-        parent = dict.DictNet(weights=weights, trainable=False)
+    def __init__(self, lexicon_size, weights="data/dictnet.mat", cnn_trainable=False):
+        parent = dict.DictNet(weights=weights, trainable=cnn_trainable)
 
         layer4_output = parent.get_layer("layer4").output
 
@@ -44,8 +44,8 @@ class _OcrBase(Model):
 
 class OcrWithLoss(Model):
 
-    def __init__(self, lexicon_size, weights="data/dictnet.mat"):
-        ocr = _OcrBase(lexicon_size, weights)
+    def __init__(self, lexicon_size, weights="data/dictnet.mat", cnn_trainable=False):
+        ocr = _OcrBase(lexicon_size, weights, cnn_trainable=cnn_trainable)
 
         input_length = Input(name='ctc_input_length', shape=[1], dtype='int64')
         label_length = Input(name='ctc_label_length', shape=[1], dtype='int64')
