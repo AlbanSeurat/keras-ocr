@@ -7,6 +7,7 @@ import keras.backend as K
 import numpy as np
 from tensorflow.python import debug as tf_debug
 from utils.datasets import CustomGeneratedDataSet, CnnRnnGenerator
+from utils.swa import SWA
 from utils.weights import WeightsDumper
 
 #image_dir = "/Users/albanseurat/Downloads/90kDICT32px/"
@@ -39,14 +40,15 @@ if "train" in sys.argv:
     dumper = WeightsDumper(ocrModel)
     dumper.restore()
 
+    swa = SWA("test", 8)
+
     optimizer = SGD(lr=0.02, decay=1e-6, momentum=0.9, nesterov=True, clipnorm=5)
-    ocrModel.compile(loss={'ctc': lambda y_true, y_pred: y_pred}, optimizer=optimizer)
+    ocrModel.compile(loss={'ctc': lambda y_true, y_pred: y_pred}, optimizer=optimizer, metrics=['accuracy'])
 
     generator = CnnRnnGenerator(dataset)
     ocrModel.summary()
 
-    ocrModel.fit_generator(generator=generator, epochs=10, callbacks=[
-        LambdaCallback(on_batch_end=lambda batch, logs: dumper.dump())])  # , use_multiprocessing=True, workers=4)
+    ocrModel.fit_generator(generator=generator, epochs=10, callbacks=[swa, LambdaCallback(on_batch_end=lambda batch, logs: dumper.dump())])  # , use_multiprocessing=True, workers=4)
 
 elif "predict" in sys.argv:
 
