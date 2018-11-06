@@ -13,3 +13,8 @@ VGG dataset for words : http://www.robots.ox.ac.uk/~vgg/data/text/
 
 https://github.com/Belval/TextRecognitionDataGenerator
 
+with this parameters :
+
+
+python3 run.py -rs -rbl -rk -c 10000 -k 5 --output_dir out/train
+python3 run.py -rs -rbl -rk -c 1000 -k 5 --output_dir out/test

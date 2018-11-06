@@ -35,12 +35,12 @@ class DictNet(Model):
 
         # layer 5 (dense 1)
         x = Flatten()(x)
-        x = Dense(4096, activation='relu', name="layer5")(x)
-        x = Dropout(0.5)(x)
+        x = Dense(4096, activation='relu')(x)
+        x = Dropout(0.5, name="layer5")(x)
 
         # layer 6 (dense 2)
-        x = Dense(4096, activation='relu', name="layer6")(x)
-        x = Dropout(0.5)(x)
+        x = Dense(4096, activation='relu')(x)
+        x = Dropout(0.5, name="layer6")(x)
 
         # output layer
         output = Dense(88172, activation='softmax', name="output")(x)

@@ -71,16 +71,27 @@ class CustomGeneratedDataSet(_BaseDataSet):
         super(CustomGeneratedDataSet, self).__init__(dir, chars, labels, images)
 
 
-class DataSetGenerator(Sequence):
-    maxTextLen = 32
+class _BaseGenerator(Sequence):
 
-    def __init__(self, dataset: DictNetDataSet, batch_size=50, gen_type="train", shuffle=True):
+    def __init__(self, dataset: DictNetDataSet, batch_size=50, shuffle=True):
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.dataset = dataset
         self.images = dataset.images.copy()
 
         self.on_epoch_end()
+
+    def __len__(self):
+        return int(np.floor(len(self.images) / self.batch_size))
+
+    def on_epoch_end(self):
+        self.indexes = np.arange(len(self.images))
+        if self.shuffle:
+            np.random.shuffle(self.indexes)
+
+
+class CnnRnnGenerator(_BaseGenerator):
+    maxTextLen = 32
 
     def __getitem__(self, index):
         indexes = self.indexes[index * self.batch_size:(index + 1) * self.batch_size]
@@ -111,10 +122,3 @@ class DataSetGenerator(Sequence):
 
         return (inputs, outputs)
 
-    def __len__(self):
-        return int(np.floor(len(self.images) / self.batch_size))
-
-    def on_epoch_end(self):
-        self.indexes = np.arange(len(self.images))
-        if self.shuffle:
-            np.random.shuffle(self.indexes)

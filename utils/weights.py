@@ -1,9 +1,8 @@
 
 class WeightsDumper:
 
-    path = "data/ocr_weights.h5"
-
-    def __init__(self, model):
+    def __init__(self, model, name = "model"):
+        self.path = "data/%s.h5" % name
         self.model = model
         self.counter = 0
 

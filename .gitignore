@@ -178,7 +178,6 @@ venv.bak/
 .idea/workspace.xml
 .idea/vcs.xml
 .ipynb_checkpoints/
-bin/
-emnist/
 output/
+local/
 data/

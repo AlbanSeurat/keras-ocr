@@ -6,7 +6,7 @@ from keras.callbacks import LambdaCallback
 import keras.backend as K
 import numpy as np
 from tensorflow.python import debug as tf_debug
-from utils.datasets import DataSetGenerator, DictNetDataSet, CustomGeneratedDataSet
+from utils.datasets import CustomGeneratedDataSet, CnnRnnGenerator
 from utils.weights import WeightsDumper
 
 #image_dir = "/Users/albanseurat/Downloads/90kDICT32px/"
@@ -42,7 +42,7 @@ if "train" in sys.argv:
     optimizer = SGD(lr=0.02, decay=1e-6, momentum=0.9, nesterov=True, clipnorm=5)
     ocrModel.compile(loss={'ctc': lambda y_true, y_pred: y_pred}, optimizer=optimizer)
 
-    generator = DataSetGenerator(dataset)
+    generator = CnnRnnGenerator(dataset)
     ocrModel.summary()
 
     ocrModel.fit_generator(generator=generator, epochs=10, callbacks=[
