@@ -10,7 +10,7 @@ from utils.datasets import CustomGeneratedDataSet, CnnRnnGenerator
 from utils.swa import SWA
 from utils.weights import WeightsDumper
 
-image_dir = "../projects/TextRecognitionDataGenerator/TextRecognitionDataGenerator/out"
+image_dir = "../TextRecognitionDataGenerator/TextRecognitionDataGenerator/out"
 dataset = CustomGeneratedDataSet(image_dir)
 
 
