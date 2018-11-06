@@ -61,9 +61,4 @@ class Ocr(Model):
 
     def __init__(self, lexicon_size, weights="data/dictnet.mat"):
         ocr = _OcrBase(lexicon_size, weights)
-
-        #input_length = Input(name='ctc_input_length', shape=[1], dtype='int64')
-        #decode = CtcDecode(input_length, name="ctc")(ocr.output)
-
-        #super(Ocr, self).__init__(inputs=[ocr.input, input_length], outputs=decode, name="Ocr")
         super(Ocr, self).__init__(inputs=ocr.input, outputs=ocr.output, name="Ocr")

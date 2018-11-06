@@ -10,10 +10,7 @@ from utils.datasets import CustomGeneratedDataSet, CnnRnnGenerator
 from utils.swa import SWA
 from utils.weights import WeightsDumper
 
-#image_dir = "/Users/albanseurat/Downloads/90kDICT32px/"
-#dataset = DictNetDataSet(image_dir, "train")
-
-image_dir = "/Users/albanseurat/projects/TextRecognitionDataGenerator/TextRecognitionDataGenerator/out"
+image_dir = "../projects/TextRecognitionDataGenerator/TextRecognitionDataGenerator/out"
 dataset = CustomGeneratedDataSet(image_dir)
 
 
@@ -48,7 +45,7 @@ if "train" in sys.argv:
     generator = CnnRnnGenerator(dataset)
     ocrModel.summary()
 
-    ocrModel.fit_generator(generator=generator, epochs=10, callbacks=[swa, LambdaCallback(on_batch_end=lambda batch, logs: dumper.dump())])  # , use_multiprocessing=True, workers=4)
+    ocrModel.fit_generator(generator=generator, epochs=10, callbacks=[swa, LambdaCallback(on_batch_end=lambda batch, logs: dumper.dump())], use_multiprocessing=True, workers=4)
 
 elif "predict" in sys.argv:
 
